@@ -15,7 +15,7 @@ MXRDR_PATH = 'https://{}:{}@mxrdr-test.icm.edu.pl'.format(
 
 
 def check_connection(api):
-    '''
+    """
     Checks if connection to MXRDR can be established.
 
     Parameters
@@ -27,13 +27,13 @@ def check_connection(api):
     -------
     HTML response status code
         When connection is succesful returns 200, otherwise 400ish code.
-    '''
+    """
     resp = api.get_info_version()
     return resp.status_code
 
 
 def create_dataset(api, json_file, dataverse='root'):
-    '''
+    """
     Creates datasets in given dataverse.
 
     Parameters
@@ -49,7 +49,7 @@ def create_dataset(api, json_file, dataverse='root'):
     -------
     bool
         True if dataset has been created, otherwise - False.
-    '''
+    """
     ds = Dataset()
     ds.from_json(read_file(json_file))
     if ds.validate_json():
@@ -63,7 +63,7 @@ def create_dataset(api, json_file, dataverse='root'):
 
 
 def save_to_file(file_name, data):
-    '''
+    """
     Saves JSON object to file. 
     
     JSON object such as datasets metadata, macromolecular metadata.
@@ -74,13 +74,13 @@ def save_to_file(file_name, data):
         Name of file to write data.
     data : JSON object (dict)
         Data in JSON format. 
-    '''
+    """
     with open(file_name, 'w') as file:
         json.dump(data, file, indent=4)
 
 
 def read_from_file(file_name):
-    '''
+    """
     Reads JSON object from file. 
     
     JSON object such as datasets metadata, macromolecular metadata.
@@ -94,7 +94,7 @@ def read_from_file(file_name):
     -------
     JSON object (dict)
         Returns read data.
-    '''
+    """
     with open(file_name, 'r') as file:
         data = json.load(file)
     
@@ -102,7 +102,7 @@ def read_from_file(file_name):
 
 
 def get_macromolecular_metadata(api, DOI):
-    '''
+    """
     Gets macromolecular metadata of given dataset.
 
     Parameters
@@ -116,7 +116,7 @@ def get_macromolecular_metadata(api, DOI):
     -------
     JSON object (dict)
         Returns macromolecular metadata in JSON format.
-    '''
+    """
     data_api = DataAccessApi(MXRDR_PATH)
     dataset = api.get_dataset(DOI)
     macromolecular_metadata = dataset.json()['data']['latestVersion']['metadataBlocks']['macromolecularcrystallography']
@@ -124,7 +124,7 @@ def get_macromolecular_metadata(api, DOI):
 
 
 def get_datasets_metadata(api, DOI):
-    '''
+    """
     Gets whole metadata of given dataset.
 
     Parameters
@@ -138,7 +138,7 @@ def get_datasets_metadata(api, DOI):
     -------
     JSON object (dict)
         Returns metadata in JSON format.
-    '''
+    """
     data_api = DataAccessApi(MXRDR_PATH)
     dataset = api.get_dataset(DOI)
     metadata = dataset.json()['data']['latestVersion']
@@ -146,7 +146,7 @@ def get_datasets_metadata(api, DOI):
 
 
 def update_metadata(DOI, json_file):
-    '''
+    """
     Updates metadata of given datasets.
 
     Parameters
@@ -160,7 +160,7 @@ def update_metadata(DOI, json_file):
     -------
     bool
         Return True if metadata was successfully sent to database, otherwise - False.
-    '''
+    """
     file = read_from_file(json_file)
 
     shell_command = 'curl -H "X-Dataverse-key: {0}" '.format(API_TOKEN)
