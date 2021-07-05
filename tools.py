@@ -33,14 +33,12 @@ def check_connection(api):
     return resp.status_code
 
 
-def create_dataset(api, json_file, dataverse='root'):
+def create_dataset(json_file, dataverse='root'):
     """
     Creates datasets in given dataverse.
 
     Parameters
     ----------
-    api : pyDataverse object
-        Object of pyDataverse NativeApi class.
     json_file : JSON object (dict)
         File from which dataset will be created.
     dataverse : str
@@ -51,16 +49,12 @@ def create_dataset(api, json_file, dataverse='root'):
     bool
         True if dataset has been created, otherwise - False.
     """
-    ds = Dataset()
-    ds.from_json(read_file(json_file))
-    if ds.validate_json():
-        try:
-            resp = api.create_dataset(dataverse, ds.json())
-            return True
-        except Exception:
-            return False
-    
-    return False
+
+    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
+    shell_command += '-X POST {0}/api/dataverses/{1}/datasets '.format(MXRDR_PATH, dataverse)
+    shell_command += '--upload-file {0}'.format(json_file)
+  
+    return sp.run(shell_command, shell=True, stdout=sp.PIPE)
 
 
 def save_to_file(file_name, data):
@@ -218,33 +212,3 @@ def get_license_info():
     Prints available licenses. 
     """
     print(requests.get(MXRDR_PATH + '/api/info/activeLicenses').json()['data']['message'])
-
-
-def wrapper(data):
-    d = {}
-    d['datasetVersion'] = data
-    return d
-
-
-api = NativeApi(MXRDR_PATH, API_TOKEN)
-print(check_connection(api))
-# get_license_info()
-# data = read_from_file('dataset.json')
-# data = wrapper(data)
-# save_to_file('dataset.json', data)
-# print(create_dataset(api, 'dataset.json'))
-
-# macromolecular_metadata = get_macromolecular_metadata(api, 'doi:10.21989/FK2/54VA1F')
-# save_to_file('metadata.json', macromolecular_metadata)
-
-
-# print(update_metadata('doi:10.21989/FK2/3AONMG', 'metadata.json'))
-
-
-# macromolecular_metadata = get_datasets_metadata(api, 'doi:10.21989/FK2/54VA1F')
-# save_to_file('dataset.json', macromolecular_metadata)
-
-
-print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'dataset.json', 'Very short test descripton.'))
-
-
