@@ -201,7 +201,7 @@ def upload_file_to_dataset(DOI, file_name, file_description):
 
     url_dataset_id = '{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}'.format(MXRDR_PATH, DOI, API_TOKEN)
 
-    files = {'file': ('test.json', open(file_name).read())}
+    files = {'file': (file_name, file_name)}
 
     r = requests.post(url_dataset_id, data=payload, files=files)
     return r.status_code
