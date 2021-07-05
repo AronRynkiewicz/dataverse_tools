@@ -3,6 +3,7 @@ from pyDataverse.models import Dataset
 from pyDataverse.utils import read_file
 from pyDataverse.models import Datafile
 import json
+import requests
 import subprocess as sp
 from credentials import API
 
@@ -163,7 +164,7 @@ def update_metadata(DOI, json_file):
     """
     file = read_from_file(json_file)
 
-    shell_command = 'curl -H "X-Dataverse-key: {0}" '.format(API_TOKEN)
+    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
     shell_command += '-X PUT {0}/api/datasets/:persistentId/versions/:draft?persistentId={1} '.format(MXRDR_PATH, DOI)
     shell_command += '-F "jsonData={0}"'.format(file)
 
@@ -174,14 +175,49 @@ def update_metadata(DOI, json_file):
     return True
 
 
-def upload_file_to_dataset(api, DOI, file_name):
-    df = Datafile()
-    df.set({"pid": DOI, "filename": file_name})
-    try:
-        resp = api.upload_datafile(DOI, file_name, df.json())
-        return True
-    except Exception:
-        return False
+def upload_file_to_dataset(DOI, file_name, file_description):
+    """
+    Uploads single file to dataset.
+
+    Parameters
+    ----------
+    DOI : str
+        DOI of dataset to which file will be uploaded.
+    file_name : str
+        Name of file to upload.
+    file_description : str
+        Description of uploaded file.
+    
+    Returns
+    -------
+    HTML response status code
+        When upload is succesful returns 200, otherwise 400ish code.
+    """
+    params = dict(
+        description=file_description,
+        termsOfUseAndAccess=dict(
+            termsType='LICENSE_BASED',
+            license='CC BY Creative Commons Attribution License 4.0',
+        )
+    )
+
+    params_as_json_string = json.dumps(params)
+
+    payload = dict(jsonData=params_as_json_string)
+
+    url_dataset_id = '{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}'.format(MXRDR_PATH, DOI, API_TOKEN)
+
+    files = {'file': ('test.json', open(file_name).read())}
+
+    r = requests.post(url_dataset_id, data=payload, files=files)
+    return r.status_code
+
+
+def get_license_info():
+    """
+    Prints available licenses. 
+    """
+    print(requests.get(MXRDR_PATH + '/api/info/activeLicenses').json()['data']['message'])
 
 
 def wrapper(data):
@@ -192,7 +228,7 @@ def wrapper(data):
 
 api = NativeApi(MXRDR_PATH, API_TOKEN)
 print(check_connection(api))
-
+# get_license_info()
 # data = read_from_file('dataset.json')
 # data = wrapper(data)
 # save_to_file('dataset.json', data)
@@ -209,6 +245,6 @@ print(check_connection(api))
 # save_to_file('dataset.json', macromolecular_metadata)
 
 
-# print(upload_file_to_dataset(api, 'doi:10.21989/FK2/A5ZCKW', 'dataset.json'))
+print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'dataset.json', 'Very short test descripton.'))
 
 
