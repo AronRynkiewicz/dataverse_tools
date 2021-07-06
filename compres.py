@@ -68,7 +68,7 @@ def zipFilesInDir2(dirName, zipFileName, filter, d, low_range, high_range):
     zipObj.close()
 
 
-def check(dirName, zipFileName, filter):
+def checkZip(dirName, zipFileName, filter):
     """
     Check the number of files.
 
@@ -102,4 +102,4 @@ def check(dirName, zipFileName, filter):
                             zipFilesInDir2(dirName, zipFileName + str(i) + '.zip', filter, d, LIMIT * i, (LIMIT * i) + previous_value)
 
 
-print(check('dwa','nowyDir','16S_D31-cyt180j_1'))
+#print(checkZip('dwa','nowyDir','16S_D31-cyt180j_1'))

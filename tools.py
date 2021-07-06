@@ -201,7 +201,7 @@ def upload_file_to_dataset(DOI, file_name, file_description):
 
     url_dataset_id = '{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}'.format(MXRDR_PATH, DOI, API_TOKEN)
 
-    files = {'file': ('test.json', open(file_name).read())}
+    files = {'file': (file_name, file_name)}
 
     r = requests.post(url_dataset_id, data=payload, files=files)
     return r.status_code
@@ -212,3 +212,48 @@ def get_license_info():
     Prints available licenses. 
     """
     print(requests.get(MXRDR_PATH + '/api/info/activeLicenses').json()['data']['message'])
+
+
+def get_dataset_id(api, DOI):
+    """
+    Gets dataset ID by dataset DOI.
+
+    Parameters
+    ----------
+    api : pyDataverse object
+        Object of pyDataverse NativeApi class.
+    DOI : str
+        DOI of a dataset.
+    
+    Returns
+    -------
+    id
+        ID of given dataset which is int or -1 if given dataset does not exists.
+    """
+    data_api = DataAccessApi(MXRDR_PATH)
+    try:
+        dataset = api.get_dataset(DOI)
+    except Exception:
+        return -1
+
+    id = dataset.json()['data']['id']
+    return id
+
+
+def delete_draft_dataset(id):
+    """
+    Deletes draft of given dataset.
+
+    Parameters
+    ----------
+    id : int
+        ID of dataset's draft to be deleted.
+    
+    Returns
+    -------
+    HTML response status code
+        When upload is succesful returns 200, otherwise 400ish code.
+    """
+    r = requests.delete(MXRDR_PATH + '/api/datasets/{0}/versions/:draft?key={1}'.format(id, API_TOKEN))
+    return r.status_code
+
