@@ -143,3 +143,5 @@ credentials.py
 *.json
 /files
 /folder
+.idea/
+
