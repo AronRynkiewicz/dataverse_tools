@@ -2,6 +2,8 @@ import unittest
 import shutil
 from compres import *
 
+# python -m unittest compres_tests.py
+
 NUMBER_OF_FILES = 3500
 DUMMY_DIR_NAME = 'folder'
 DATASET_NAME = '16S_D31-cyt180j_1'
