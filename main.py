@@ -19,5 +19,5 @@ print(check_connection(api))
 
 
 # print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'dataset.json', 'Very short test descripton.'))
-
+#zipFilesInDir('Nazwafolderu','nowyDir.zip','16S_D31-cyt180j_1')
 print(create_dataset('dataset.json'))
