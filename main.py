@@ -1,5 +1,6 @@
 from tools import *
 
+
 api = NativeApi(MXRDR_PATH, API_TOKEN)
 print(check_connection(api))
 # get_license_info()
@@ -18,6 +19,8 @@ print(check_connection(api))
 # save_to_file('dataset.json', macromolecular_metadata)
 
 
-print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'tmp.zip', 'Very short test descripton.'))
+# print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'tmp.zip', 'Very short test descripton.'))
 
-# print(create_dataset('dataset.json'))
+# print(create_dataset('test_dataset.json'))
+# print(delete_draft_dataset(get_dataset_id(api, 'doi:10.21989/FK2/IIMVVN')))
+# print(get_dataset_id(api, 'doi:10.21989/FK2/CRVEJO'))
