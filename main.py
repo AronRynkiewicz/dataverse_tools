@@ -1,34 +1,65 @@
+import argparse
+import ast
+import os
 from tools import *
+from compres import *
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+        '-f',
+        '--json_file',
+        type=str,
+        required=True,
+        help = 'Metadata for new dataset in json file.',
+    )
+parser.add_argument(
+        '-d',
+        '--dir',
+        type=str,
+        required=True,
+        help = 'Directory where script will look for data.',
+    )
+parser.add_argument(
+        '-fp',
+        '--files_prefix',
+        type=str,
+        required=True,
+        help = 'Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt',
+    )
+
+args = parser.parse_args()
+
+print('Creating new dataset with metadata from: ' +
+        args.json_file +
+        ', files from: ' + args.dir +
+        ' dricractory, with common prefix: ' + args.files_prefix
+    )
 
 api = NativeApi(MXRDR_PATH, API_TOKEN)
-print(check_connection(api))
-# get_license_info()
-# data = read_from_file('dataset.json')
-# data = wrapper(data)
-# save_to_file('dataset.json', data)
+print('Checking connection to dataverse...')
+connection_code = check_connection(api)
+print('Status: ' + str(connection_code))
 
-# macromolecular_metadata = get_macromolecular_metadata(api, 'doi:10.21989/FK2/54VA1F')
-# save_to_file('metadata.json', macromolecular_metadata)
+if connection_code == 200:
+    print('Creating new dataset...')
+    data = ast.literal_eval(create_dataset(args.json_file).stdout.decode("UTF-8"))
+    print('Status: ' + data['status'])
 
+    print('Preparing files...')
+    zip_files_list = zip_files(args.dir, args.files_prefix, args.files_prefix)
+    print('Done')
 
-# print(update_metadata('doi:10.21989/FK2/3AONMG', 'citation_metadata.json'))
+    print('Sending zips to dataset...')
+    for it, file in enumerate(zip_files_list):
+        print('Uploading file #' + str(it))
+        code = upload_file_to_dataset(data['data']['persistentId'], file, 'ZIP file')
+        print('Status: ' + str(code))
+    print('Done')
 
-
-# macromolecular_metadata = get_datasets_metadata(api, 'doi:10.21989/FK2/54VA1F')
-# save_to_file('dataset.json', macromolecular_metadata)
-
-
-
-# print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'dataset.json', 'Very short test descripton.'))
-#zipFilesInDir('Nazwafolderu','nowyDir.zip','16S_D31-cyt180j_1')
-
-
-# print(upload_file_to_dataset('doi:10.21989/FK2/3AONMG', 'tmp.zip', 'Very short test descripton.'))
-
-# print(create_dataset('test_dataset.json'))
-# print(delete_draft_dataset(get_dataset_id(api, 'doi:10.21989/FK2/IIMVVN')))
-# print(get_dataset_id(api, 'doi:10.21989/FK2/CRVEJO'))
-
-
-
+    print('Cleaning...')
+    for file in zip_files_list:
+        os.remove(file)
+    print('Done')
+else:
+    print('Script could not connect to dataverse!')
