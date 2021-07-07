@@ -5,7 +5,7 @@ from os.path import basename
 
 LIMIT = 900
 
-def createDict(dirName):
+def create_dict(dirName):
    """
     Creates a dictionary with filenames.
     
@@ -69,7 +69,7 @@ def zipFilesInDir2(dirName, zipFileName, filter, d, low_range, high_range):
     zipObj.close()
 
 
-def checkZip(dirName, zipFileName, filter):
+def zip_files(dirName, zipFileName, filter):
     """
     Check the number of files.
 
@@ -90,7 +90,7 @@ def checkZip(dirName, zipFileName, filter):
     """
     lst=[]
     dataset = filter
-    d = createDict(dirName)
+    d = create_dict(dirName)
     try:
         d[dataset]
     except KeyError:

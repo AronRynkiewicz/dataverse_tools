@@ -58,7 +58,7 @@ class TestCompres(unittest.TestCase):
         create_dummy_dir(DUMMY_DIR_NAME)
         create_dummy_dir(UNZIPPED_DIR_NAME)
         create_dummy_files(NUMBER_OF_FILES)
-        self.files_lst = checkZip(DUMMY_DIR_NAME, TEST_ZIP_NAME, DATASET_NAME)
+        self.files_lst = zip_files(DUMMY_DIR_NAME, TEST_ZIP_NAME, DATASET_NAME)
 
 
     def test_zip_creation(self):
