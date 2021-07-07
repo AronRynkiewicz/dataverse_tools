@@ -84,7 +84,11 @@ def checkZip(dirName, zipFileName, filter):
     filter : string
         The proper name of the data set.
 
+     Returns
+    -------
+        List with the names of the output files.
     """
+    lst=[]
     d = createDict(dirName)
     for dataset in filter.split(','):
         try:
@@ -95,6 +99,7 @@ def checkZip(dirName, zipFileName, filter):
         datasets_files_counter = int(len(d[dataset]))
         if (datasets_files_counter < LIMIT):
             zipFilesInDir2(dirName, zipFileName + '.zip', filter, d, 0, len(d[dataset]))
+            lst.append(zipFileName + '.zip')
         else:
             number = math.ceil(int(datasets_files_counter) / LIMIT)
             for i in range(0, int(number)):
@@ -102,5 +107,8 @@ def checkZip(dirName, zipFileName, filter):
                 datasets_files_counter -= LIMIT
                 if datasets_files_counter > 0:
                     zipFilesInDir2(dirName, zipFileName + str(i) + '.zip', filter, d, LIMIT * i, (i+1)*LIMIT)
+                    lst.append(zipFileName + str(i) + '.zip')
                 if datasets_files_counter < 0:
                     zipFilesInDir2(dirName, zipFileName + str(i) + '.zip', filter, d, LIMIT * i, (LIMIT * i) + previous_value)
+                    lst.append(zipFileName + str(i) + '.zip')
+    return lst
