@@ -6,8 +6,8 @@ from compres import *
 # python -m unittest compres_tests.py
 
 NUMBER_OF_FILES = 3500
-DUMMY_DIR_NAME = 'folder1'
-UNZIPPED_DIR_NAME = 'folder_unzip'
+DUMMY_DIR_NAME = 'folder2'
+UNZIPPED_DIR_NAME = 'folder_unzip2'
 DATASET_NAME = '16S_D31-cyt180j_1'
 TEST_ZIP_NAME = 'test'
 
@@ -63,7 +63,7 @@ class TestCompres(unittest.TestCase):
 
     def test_zip_creation(self):
         dirs_count = len([file for file in os.listdir() if file.startswith(TEST_ZIP_NAME) and file.endswith('.zip')])
-        self.assertEqual(math.ceil(NUMBER_OF_FILES / LIMIT), dirs_count)
+        self.assertEqual(len(self.files_lst), dirs_count)
 
 
     def test_filenames(self):
@@ -78,8 +78,8 @@ class TestCompres(unittest.TestCase):
         shutil.rmtree(DUMMY_DIR_NAME)
         shutil.rmtree(UNZIPPED_DIR_NAME)
 
-        for i in range(math.ceil(NUMBER_OF_FILES / LIMIT)):
-            os.remove(TEST_ZIP_NAME + str(i) + '.zip')
+        for file in self.files_lst:
+            os.remove(file)
 
 
 if __name__ == '__main__':
