@@ -28,17 +28,9 @@ parser.add_argument(
         help = 'Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt',
     )
 
-parser.add_argument(
-        '-msg',
-        '--message',
-        type=str,
-        required=True,
-        help = 'File with description for zip files.',
-    )
-
 args = parser.parse_args()
 
-ZIP_FILES_DESCRIPTION = open(args.message).read()
+ZIP_FILES_DESCRIPTION = ''
 
 print('Creating new dataset with metadata from: ' +
         args.json_file +
