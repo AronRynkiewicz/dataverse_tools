@@ -38,6 +38,6 @@ def create_image(dir_name, prefix):
     """
     created_image_name = 'diff-image-thumb.jpeg'
     first_file = get_first_file(dir_name, prefix)
-    os.system('adxv -jpeg_quality 100 -sa {} {}'.format(first_file, created_image_name))
+    os.system('adxv -jpeg_quality 100 -sa {} {}'.format(os.path.join(dir_name, first_file), created_image_name))
 
     return created_image_name
