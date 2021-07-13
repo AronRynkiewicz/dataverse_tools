@@ -3,6 +3,7 @@ import ast
 import os
 from tools import *
 from compres import *
+from create_image import *
 
 
 parser = argparse.ArgumentParser()
@@ -50,7 +51,11 @@ if connection_code == 200:
     print('Status: ' + data['status'])
 
     print('Preparing files...')
-    zip_files_list = zip_files(args.dir, args.files_prefix, args.files_prefix)
+    zip_files_list = []
+
+    zip_files_list.append(create_image(args.dir, args.files_prefix))
+    
+    zip_files_list.extend(zip_files(args.dir, args.files_prefix, args.files_prefix))
     print('Done')
 
     print('Sending zips to dataset...')
