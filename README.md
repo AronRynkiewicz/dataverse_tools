@@ -1,9 +1,17 @@
 # Dataverse tools
 [MX-RDR](https://mxrdr.icm.edu.pl/) tool, in form of python script, which simplifies new data set creation.
 
+# Available functionality
+Using just one script you can:
+* create new dataset
+* add metadata to it
+* zip all files and add them to dataset
+* add JPEG file from first diffraction image
+
 # Installation
 To use this tool, you need:
 * Python 3
+* adxv - for diffraction image creation
 
 we also suggest:
 * git - for easier download
