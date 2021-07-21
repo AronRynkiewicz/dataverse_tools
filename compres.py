@@ -116,12 +116,13 @@ def zip_files(dirName, zipFileName, filter):
         lst_to_zip.append(d[dataset][i])
         remembered_size += lst_mb[i]
 
-        if remembered_size >= 1800:
+        if remembered_size >= 1900:
             lst_to_zip.pop()
             list_with_lst_to_zip.append(lst_to_zip[:])
             lst_to_zip.clear()
             remembered_size = 0
             lst_to_zip.append(d[dataset][i])
+            remembered_size += lst_mb[i]
 
     list_with_lst_to_zip.append(lst_to_zip[:])
 
