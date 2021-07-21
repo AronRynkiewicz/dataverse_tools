@@ -123,7 +123,7 @@ def zip_files(dirName, zipFileName, filter):
             remembered_size = 0
             lst_to_zip.append(d[dataset][i])
 
-    list_with_lst_to_zip.append(lst_to_zip)
+    list_with_lst_to_zip.append(lst_to_zip[:])
 
     for i in range(0, len(list_with_lst_to_zip)):
         zipFilesInDir2(dirName, zipFileName + str(i) + '.zip', filter, d, list_with_lst_to_zip[i])
