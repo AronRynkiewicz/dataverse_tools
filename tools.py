@@ -35,7 +35,7 @@ def check_connection(api):
     return resp.status_code
 
 
-def create_dataset(json_file, dataverse='root'):
+def create_dataset(json_file, dataverse=':root'):
     """
     Creates datasets in given dataverse.
 
