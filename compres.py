@@ -127,7 +127,7 @@ def zip_files(dirName, zipFileName, filter):
     list_with_lst_to_zip.append(lst_to_zip[:])
 
     for i in range(0, len(list_with_lst_to_zip)):
-        zipFilesInDir2(dirName, zipFileName + '_' + str(i) + '.zip', filter, d, list_with_lst_to_zip[i])
-        lst.append(zipFileName + '_' + str(i) + '.zip')
+        zipFilesInDir2(dirName, zipFileName + '_' + str(i + 1) + '.zip', filter, d, list_with_lst_to_zip[i])
+        lst.append(zipFileName + '_' + str(i + 1) + '.zip')
 
     return lst
