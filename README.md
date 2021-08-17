@@ -32,11 +32,6 @@ to install required python packages.
 Last step is pasting your API token to credentials.py file between '':
 ```
 API = {
-    'LOGIN_DATA' : {
-        'username': '',
-        'password': '',
-    },
-
     'API_TOKEN': 'you api token goes here',
 }
 ```
