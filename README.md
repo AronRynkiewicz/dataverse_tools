@@ -11,7 +11,7 @@ Using just one script you can:
 # Installation
 To use this tool, you need:
 * Python 3
-* adxv - for diffraction image creation
+* [adxv](https://www.scripps.edu/tainer/arvai/adxv.html) - for diffraction image creation
 
 we also suggest:
 * git - for easier download
