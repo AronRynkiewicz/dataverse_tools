@@ -1,4 +1,22 @@
+from PIL import Image
 import os
+import PIL
+
+IMAGE_SCALE = 0.2
+
+def resize_img(img_name):
+    """
+    Resizes image, uses global IMAGE_SCALE. Overwrites existing image.
+
+    Parameters
+    ----------
+    img_name : str
+        Image file name to be resized.
+    """
+    image = Image.open(img_name)
+    image = image.resize((int(IMAGE_SCALE * image.size[0]), int(IMAGE_SCALE * image.size[1])), PIL.Image.NEAREST)
+    image.save(img_name)
+
 
 
 def get_first_file(dir_name, prefix):
@@ -23,7 +41,7 @@ def get_first_file(dir_name, prefix):
 
 def create_image(dir_name, prefix):
     """
-    Creates image which will represent dataset. Uses adxv linux programm.
+    Creates image which will represent dataset. Uses adxv linux program.
 
     Parameters
     ----------
@@ -36,9 +54,14 @@ def create_image(dir_name, prefix):
     ------- 
         Name of created file.
     """
+    slabs = ''
     created_image_name = 'diff-image-thumb.jpeg'
     first_file = get_first_file(dir_name, prefix)
-    created_image_dir = os.path.join(dir_name, '..')
-    os.system('adxv -slabs 10 -jpeg_quality 100 ‐jpeg_scale 0.2 -sa {} {}'.format(os.path.join(dir_name, first_file), os.path.join(created_image_dir, created_image_name)))
+
+    if first_file.endswith('.h5'):
+        slabs = '-slabs 10'
+
+    os.system('adxv {} -jpeg_quality 100 -sa {} {}'.format(slabs, os.path.join(dir_name, first_file), created_image_name))
+    resize_img(created_image_name)
 
     return created_image_name
