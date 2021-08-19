@@ -54,7 +54,7 @@ if connection_code == 200:
         print('Preparing files...')
         zip_files_list = []
 
-        zip_files_list.append(create_image(args.dir, args.files_prefix))
+        # zip_files_list.append(create_image(args.dir, args.files_prefix))
         
         zip_files_list.extend(zip_files(args.dir, args.files_prefix, args.files_prefix))
         print('Done')
