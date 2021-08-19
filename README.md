@@ -6,12 +6,12 @@ Using just one script you can:
 * create new dataset
 * add metadata to it
 * zip all files and add them to dataset
-* add JPEG file from first diffraction image
+<!--- * add JPEG file from first diffraction image --->
 
 # Installation
 To use this tool, you need:
 * Python 3
-* [adxv](https://www.scripps.edu/tainer/arvai/adxv.html) - for diffraction image creation
+<!--- * [adxv](https://www.scripps.edu/tainer/arvai/adxv.html) - for diffraction image creation --->
 
 we also suggest:
 * git - for easier download
