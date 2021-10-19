@@ -7,27 +7,31 @@ from os.path import basename
 def create_dict(dirName):
    """
     Creates a dictionary with filenames.
-    
+
     Parameters
     ----------
     dirName : string
         The name of the directory where the desired files are located.
 
     Returns
-    ------- 
+    -------
         Dictionary with dataset name as key and list of files as value.
    """
    d={}
-   for folderName, subfolders, filenames in os.walk(dirName):
-       for filename in filenames:
-           if 'data' in filename:
-               file_type = '_'.join(filename.split('_')[:-2])
-           else:
-               file_type = '_'.join(filename.split('_')[:-1])
-           try:
-               d[file_type].append(filename)
-           except Exception:
-               d[file_type] = [filename]
+
+   for filename in os.listdir(dirName):
+       path = os.path.join(os.getcwd(), dirName, filename)
+       if os.path.isdir(path):
+           continue
+
+       if 'data' in filename:
+           file_type = '_'.join(filename.split('_')[:-2])
+       else:
+           file_type = '_'.join(filename.split('_')[:-1])
+       try:
+           d[file_type].append(filename)
+       except Exception:
+           d[file_type] = [filename]
 
    return d
 
@@ -104,11 +108,13 @@ def zip_files(dirName, zipFileName, filter):
     except KeyError:
         return []
 
+    current_path = os.getcwd()
+
     os.chdir(dirName)
     for i in range(0, len(d[dataset])):
         size_file = os.stat(d[dataset][i]).st_size
         lst_size_file.append(size_file)
-    os.chdir('..')
+    os.chdir(current_path)
 
     lst_mb = list(map(convert_to_MBs, lst_size_file))
 
@@ -127,6 +133,7 @@ def zip_files(dirName, zipFileName, filter):
     list_with_lst_to_zip.append(lst_to_zip[:])
 
     for i in range(0, len(list_with_lst_to_zip)):
+        print('Creating zip: ' + str(i + 1) + ' of ' + str(len(list_with_lst_to_zip)))
         zipFilesInDir2(dirName, zipFileName + '_' + str(i + 1) + '.zip', filter, d, list_with_lst_to_zip[i])
         lst.append(zipFileName + '_' + str(i + 1) + '.zip')
 
