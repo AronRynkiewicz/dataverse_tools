@@ -18,19 +18,19 @@ we also suggest:
 * virtual environment (eg. anaconda) - for packages management
 
 Using terminal just paste:
-```
+```console
 git clone https://github.com/AronRynkiewicz/dataverse_tools
 ```
 to download this tool.
 
 Next change directory to dataverse_tools and paste:
-```
+```console
 pip install -r requirements.txt
 ```
 to install required python packages.
 
 Last step is pasting your API token to credentials.py file between '':
-```
+```python
 API = {
     'API_TOKEN': 'you api token goes here',
 }
@@ -38,7 +38,7 @@ API = {
 
 # Usage
 To use script write:
-```
+```console
 python main.py -f dataset_metadata.json -d data_directory -fp common_file_prefix
 ```
 while being in dataverse_tools directory.
