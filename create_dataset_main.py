@@ -3,8 +3,6 @@ import os
 from tools import *
 from compres import *
 
-from main import ZIP_FILES_DESCRIPTION
-
 
 def create_dataset_main(dir, files_prefix, json_file):
     print("Creating new dataset...")
@@ -21,9 +19,7 @@ def create_dataset_main(dir, files_prefix, json_file):
         print("Sending zips to dataset...")
         for it, file in enumerate(zip_files_list):
             print("Uploading file #" + str(it))
-            code = upload_file_to_dataset(
-                data["data"]["persistentId"], file, ZIP_FILES_DESCRIPTION
-            )
+            code = upload_file_to_dataset(data["data"]["persistentId"], file, "")
             print("Status: " + str(code))
         print("Done")
 

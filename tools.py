@@ -6,10 +6,13 @@ import json
 import requests
 import subprocess as sp
 
-with open("credentials.json", "r") as file:
-    API = json.load(file)
+try:
+    with open("credentials.json", "r") as file:
+        API = json.load(file)
+        API_TOKEN = API["API_TOKEN"]
+except FileNotFoundError:
+    print("There is not credentials.json file! Please run setup.py script!")
 
-API_TOKEN = API["API_TOKEN"]
 
 MXRDR_PATH = "https://mxrdr.icm.edu.pl"
 

@@ -51,8 +51,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-ZIP_FILES_DESCRIPTION = ""
-
 
 def main():
     print("Checking API TOKEN...")
