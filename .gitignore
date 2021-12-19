@@ -141,7 +141,7 @@ cython_debug/
 # Project specific
 chromium_driver/
 *_credentials.py
-metadata.json
+*.json
 /files
 /folder
 .idea/
