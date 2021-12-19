@@ -1,11 +1,13 @@
+import argparse
 import math
 from zipfile import ZipFile
 import os
 from os.path import basename
+import sys
 
 
 def create_dict(dirName):
-   """
+    """
     Creates a dictionary with filenames.
 
     Parameters
@@ -16,24 +18,24 @@ def create_dict(dirName):
     Returns
     -------
         Dictionary with dataset name as key and list of files as value.
-   """
-   d={}
+    """
+    d = {}
 
-   for filename in os.listdir(dirName):
-       path = os.path.join(os.getcwd(), dirName, filename)
-       if os.path.isdir(path):
-           continue
+    for filename in os.listdir(dirName):
+        path = os.path.join(os.getcwd(), dirName, filename)
+        if os.path.isdir(path):
+            continue
 
-       if 'data' in filename:
-           file_type = '_'.join(filename.split('_')[:-2])
-       else:
-           file_type = '_'.join(filename.split('_')[:-1])
-       try:
-           d[file_type].append(filename)
-       except Exception:
-           d[file_type] = [filename]
+        if "data" in filename:
+            file_type = "_".join(filename.split("_")[:-2])
+        else:
+            file_type = "_".join(filename.split("_")[:-1])
+        try:
+            d[file_type].append(filename)
+        except Exception:
+            d[file_type] = [filename]
 
-   return d
+    return d
 
 
 def zipFilesInDir2(dirName, zipFileName, filter, d, lst):
@@ -58,7 +60,7 @@ def zipFilesInDir2(dirName, zipFileName, filter, d, lst):
 
     """
     dataset = filter
-    with ZipFile(zipFileName, 'w') as zipObj:
+    with ZipFile(zipFileName, "w") as zipObj:
         try:
             d[dataset]
         except KeyError:
@@ -76,23 +78,23 @@ def convert_to_MBs(bytes_value):
 
 def zip_files(dirName, zipFileName, filter):
     """
-        Check the number of files.
+    Check the number of files.
 
-        Parameters
-        ----------
-        dirName : string
-            The name of the directory where the desired files are located.
+    Parameters
+    ----------
+    dirName : string
+        The name of the directory where the desired files are located.
 
-        zipFileName : string
-            The name of the compressed file.
+    zipFileName : string
+        The name of the compressed file.
 
-        filter : string
-            The proper name of the data set.
+    filter : string
+        The proper name of the data set.
 
-         Returns
-        -------
-            List with the names of the output files.
-        """
+     Returns
+    -------
+        List with the names of the output files.
+    """
     lst = []
     lst_mb = []
     lst_size_file = []
@@ -117,24 +119,74 @@ def zip_files(dirName, zipFileName, filter):
     os.chdir(current_path)
 
     lst_mb = list(map(convert_to_MBs, lst_size_file))
-
+    d[dataset].sort()
     for i in range(0, len(d[dataset])):
         lst_to_zip.append(d[dataset][i])
         remembered_size += lst_mb[i]
 
         if remembered_size >= 1900:
             lst_to_zip.pop()
+            lst_to_zip.sort()
             list_with_lst_to_zip.append(lst_to_zip[:])
             lst_to_zip.clear()
             remembered_size = 0
             lst_to_zip.append(d[dataset][i])
             remembered_size += lst_mb[i]
-
+    lst_to_zip.sort()
     list_with_lst_to_zip.append(lst_to_zip[:])
 
+    prev = 0
+    print(
+        "Creating: "
+        + str(len(list_with_lst_to_zip))
+        + " zip files from "
+        + str(len(d[dataset]))
+        + " files"
+    )
+
     for i in range(0, len(list_with_lst_to_zip)):
-        print('Creating zip: ' + str(i + 1) + ' of ' + str(len(list_with_lst_to_zip)))
-        zipFilesInDir2(dirName, zipFileName + '_' + str(i + 1) + '.zip', filter, d, list_with_lst_to_zip[i])
-        lst.append(zipFileName + '_' + str(i + 1) + '.zip')
+        print("Creating zip: " + str(i + 1) + " of " + str(len(list_with_lst_to_zip)))
+        tmp_zipFileName = (
+            zipFileName
+            + "_"
+            + "img"
+            + "_"
+            + str(prev + 1)
+            + "_"
+            + str(prev + len(list_with_lst_to_zip[i]))
+            + ".zip"
+        )
+
+        zipFilesInDir2(
+            dirName,
+            tmp_zipFileName,
+            filter,
+            d,
+            list_with_lst_to_zip[i],
+        )
+        lst.append(tmp_zipFileName)
+        prev += len(list_with_lst_to_zip[i])
 
     return lst
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-d",
+        "--dir",
+        type=str,
+        required=True,
+        help="Directory where script will look for data.",
+    )
+    parser.add_argument(
+        "-fp",
+        "--files_prefix",
+        type=str,
+        required=True,
+        help="Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt",
+    )
+
+    args = parser.parse_args()
+
+    zip_files(args.dir, args.files_prefix, args.files_prefix)
