@@ -7,14 +7,14 @@ import requests
 import subprocess as sp
 from credentials import API
 
-API_TOKEN = API['API_TOKEN']
+API_TOKEN = API["API_TOKEN"]
 
 # MXRDR_PATH = 'https://{}:{}@mxrdr-test.icm.edu.pl'.format(
 #     API['LOGIN_DATA']['username'],
 #     API['LOGIN_DATA']['password'],
 # )
 
-MXRDR_PATH = 'https://mxrdr.icm.edu.pl'
+MXRDR_PATH = "https://mxrdr.icm.edu.pl"
 
 
 def check_connection(api):
@@ -25,7 +25,7 @@ def check_connection(api):
     ----------
     api : pyDataverse object
         Object of pyDataverse NativeApi class.
-    
+
     Returns
     -------
     HTML response status code
@@ -35,7 +35,7 @@ def check_connection(api):
     return resp.status_code
 
 
-def create_dataset(json_file, dataverse=':root'):
+def create_dataset(json_file, dataverse=":root"):
     """
     Creates datasets in given dataverse.
 
@@ -45,7 +45,7 @@ def create_dataset(json_file, dataverse=':root'):
         File from which dataset will be created.
     dataverse : str
         Name of dataverse. Default is root.
-    
+
     Returns
     -------
     bool
@@ -53,16 +53,18 @@ def create_dataset(json_file, dataverse=':root'):
     """
 
     shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
-    shell_command += '-X POST {0}/api/dataverses/{1}/datasets '.format(MXRDR_PATH, dataverse)
-    shell_command += '--upload-file {0}'.format(json_file)
-  
+    shell_command += "-X POST {0}/api/dataverses/{1}/datasets ".format(
+        MXRDR_PATH, dataverse
+    )
+    shell_command += "--upload-file {0}".format(json_file)
+
     return sp.run(shell_command, shell=True, stdout=sp.PIPE)
 
 
 def save_to_file(file_name, data):
     """
-    Saves JSON object to file. 
-    
+    Saves JSON object to file.
+
     JSON object such as datasets metadata, macromolecular metadata.
 
     Parameters
@@ -70,31 +72,31 @@ def save_to_file(file_name, data):
     file_name : str
         Name of file to write data.
     data : JSON object (dict)
-        Data in JSON format. 
+        Data in JSON format.
     """
-    with open(file_name, 'w') as file:
+    with open(file_name, "w") as file:
         json.dump(data, file, indent=4)
 
 
 def read_from_file(file_name):
     """
-    Reads JSON object from file. 
-    
+    Reads JSON object from file.
+
     JSON object such as datasets metadata, macromolecular metadata.
 
     Parameters
     ----------
     file_name : str
         Name of file to read data.
-    
+
     Returns
     -------
     JSON object (dict)
         Returns read data.
     """
-    with open(file_name, 'r') as file:
+    with open(file_name, "r") as file:
         data = json.load(file)
-    
+
     return data
 
 
@@ -108,7 +110,7 @@ def get_macromolecular_metadata(api, DOI):
         Object of pyDataverse NativeApi class.
     DOI : str
         DOI of dataset from which metadata will be collected.
-    
+
     Returns
     -------
     JSON object (dict)
@@ -116,7 +118,9 @@ def get_macromolecular_metadata(api, DOI):
     """
     data_api = DataAccessApi(MXRDR_PATH)
     dataset = api.get_dataset(DOI)
-    macromolecular_metadata = dataset.json()['data']['latestVersion']['metadataBlocks']['macromolecularcrystallography']
+    macromolecular_metadata = dataset.json()["data"]["latestVersion"]["metadataBlocks"][
+        "macromolecularcrystallography"
+    ]
     return macromolecular_metadata
 
 
@@ -130,7 +134,7 @@ def get_datasets_metadata(api, DOI):
         Object of pyDataverse NativeApi class.
     DOI : str
         DOI of dataset from which metadata will be collected.
-    
+
     Returns
     -------
     JSON object (dict)
@@ -138,7 +142,7 @@ def get_datasets_metadata(api, DOI):
     """
     data_api = DataAccessApi(MXRDR_PATH)
     dataset = api.get_dataset(DOI)
-    metadata = dataset.json()['data']['latestVersion']
+    metadata = dataset.json()["data"]["latestVersion"]
     return metadata
 
 
@@ -152,7 +156,7 @@ def update_metadata(DOI, json_file):
         DOI of dataset from which metadata will be collected.
     json_file : str
         Name of file which contains updated metadata.
-    
+
     Returns
     -------
     bool
@@ -161,7 +165,9 @@ def update_metadata(DOI, json_file):
     file = read_from_file(json_file)
 
     shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
-    shell_command += '-X PUT {0}/api/datasets/:persistentId/versions/:draft?persistentId={1} '.format(MXRDR_PATH, DOI)
+    shell_command += "-X PUT {0}/api/datasets/:persistentId/versions/:draft?persistentId={1} ".format(
+        MXRDR_PATH, DOI
+    )
     shell_command += '-F "jsonData={0}"'.format(file)
 
     try:
@@ -183,7 +189,7 @@ def upload_file_to_dataset(DOI, file_name, file_description):
         Name of file to upload.
     file_description : str
         Description of uploaded file.
-    
+
     Returns
     -------
     HTML response status code
@@ -192,18 +198,22 @@ def upload_file_to_dataset(DOI, file_name, file_description):
     params = dict(
         description=file_description,
         termsOfUseAndAccess=dict(
-            termsType='LICENSE_BASED',
-            license='CC BY Creative Commons Attribution License 4.0',
-        )
+            termsType="LICENSE_BASED",
+            license="CC BY Creative Commons Attribution License 4.0",
+        ),
     )
 
     params_as_json_string = json.dumps(params)
 
     payload = dict(jsonData=params_as_json_string)
 
-    url_dataset_id = '{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}'.format(MXRDR_PATH, DOI, API_TOKEN)
+    url_dataset_id = (
+        "{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}".format(
+            MXRDR_PATH, DOI, API_TOKEN
+        )
+    )
 
-    files = {'file': (file_name, open(file_name, 'rb'))}
+    files = {"file": (file_name, open(file_name, "rb"))}
 
     r = requests.post(url_dataset_id, data=payload, files=files)
     return r.status_code
@@ -211,9 +221,11 @@ def upload_file_to_dataset(DOI, file_name, file_description):
 
 def get_license_info():
     """
-    Prints available licenses. 
+    Prints available licenses.
     """
-    print(requests.get(MXRDR_PATH + '/api/info/activeLicenses').json()['data']['message'])
+    print(
+        requests.get(MXRDR_PATH + "/api/info/activeLicenses").json()["data"]["message"]
+    )
 
 
 def get_dataset_id(api, DOI):
@@ -226,7 +238,7 @@ def get_dataset_id(api, DOI):
         Object of pyDataverse NativeApi class.
     DOI : str
         DOI of a dataset.
-    
+
     Returns
     -------
     id
@@ -238,7 +250,7 @@ def get_dataset_id(api, DOI):
     except Exception:
         return -1
 
-    id = dataset.json()['data']['id']
+    id = dataset.json()["data"]["id"]
     return id
 
 
@@ -250,12 +262,13 @@ def delete_draft_dataset(id):
     ----------
     id : int
         ID of dataset's draft to be deleted.
-    
+
     Returns
     -------
     HTML response status code
         When upload is succesful returns 200, otherwise 400ish code.
     """
-    r = requests.delete(MXRDR_PATH + '/api/datasets/{0}/versions/:draft?key={1}'.format(id, API_TOKEN))
+    r = requests.delete(
+        MXRDR_PATH + "/api/datasets/{0}/versions/:draft?key={1}".format(id, API_TOKEN)
+    )
     return r.status_code
-

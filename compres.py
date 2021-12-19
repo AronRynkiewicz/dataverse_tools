@@ -3,7 +3,6 @@ import math
 from zipfile import ZipFile
 import os
 from os.path import basename
-import sys
 
 
 def create_dict(dirName):
