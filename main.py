@@ -1,16 +1,17 @@
 import argparse
-import ast
-import os
+import pyDataverse
+import create_dataset_main
+import compres_files_main
+import send_files_main
 from tools import *
 from compres import *
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "-f",
     "--json_file",
     type=str,
-    required=True,
+    required=False,
     help="Metadata for new dataset in json file.",
 )
 parser.add_argument(
@@ -27,54 +28,77 @@ parser.add_argument(
     required=True,
     help="Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt",
 )
+parser.add_argument(
+    "-u",
+    "--url",
+    type=str,
+    required=False,
+    help="Url of a dataset where zipped files will be send.",
+)
+parser.add_argument(
+    "-m",
+    "--mode",
+    type=str,
+    required=True,
+    choices={"send", "zip", "create"},
+    help="""
+    Mode in which script will work:
+    - send: zipps and sends files to given dataset,
+    - zip: only zips files in given directory,
+    - create: creates new dataset, zips files and sends them.
+    """,
+)
 
 args = parser.parse_args()
 
 ZIP_FILES_DESCRIPTION = ""
 
-print(
-    "Creating new dataset with metadata from: "
-    + args.json_file
-    + ", files from: "
-    + args.dir
-    + " dricractory, with common prefix: "
-    + args.files_prefix
-    + " and this text as desricption of all send files: "
-    + ZIP_FILES_DESCRIPTION
-)
 
-api = NativeApi(MXRDR_PATH, API_TOKEN)
-print("Checking connection to dataverse...")
-connection_code = check_connection(api)
-print("Status: " + str(connection_code))
+def main():
+    print("Checking API TOKEN...")
+    if API_TOKEN:
+        api = NativeApi(MXRDR_PATH, API_TOKEN)
 
-if connection_code == 200:
-    print("Creating new dataset...")
-    data = ast.literal_eval(create_dataset(args.json_file).stdout.decode("UTF-8"))
-    print("Status: " + data["status"])
+        print("Checking connection to dataverse...")
+        try:
+            connection_code = check_connection(api)
+        except pyDataverse.exceptions.ApiAuthorizationError:
+            connection_code = 403
+            print("Bad api key!")
+        print("Status: " + str(connection_code))
 
-    if data["status"] == "OK":
-        print("Preparing files...")
-        zip_files_list = []
+        if connection_code == 200:
+            if args.mode == "create":
+                try:
+                    args.json_file
+                except Exception:
+                    print("JSON file was not set! Please set JSON files using -f flag.")
+                    return
+                create_dataset_main.create_dataset_main(
+                    args.dir, args.files_prefix, args.json_file
+                )
 
-        zip_files_list.extend(zip_files(args.dir, args.files_prefix, args.files_prefix))
-        print("Done")
+            if args.mode == "zip":
+                compres_files_main.compres_files_main(args.dir, args.files_prefix)
 
-        print("Sending zips to dataset...")
-        for it, file in enumerate(zip_files_list):
-            print("Uploading file #" + str(it))
-            code = upload_file_to_dataset(
-                data["data"]["persistentId"], file, ZIP_FILES_DESCRIPTION
-            )
-            print("Status: " + str(code))
-        print("Done")
+            if args.mode == "send":
+                try:
+                    args.url
+                except Exception:
+                    print(
+                        "Dataset URL was not set! Please set URL files using -u flag."
+                    )
+                    return
+                send_files_main.send_files_main(
+                    api, args.dir, args.files_prefix, args.url
+                )
 
-        print("Cleaning...")
-        for file in zip_files_list:
-            os.remove(file)
-        print("Done")
+        else:
+            print("Could not connect to dataverse!")
+
     else:
-        print("There was a problem with dataset creation:")
-        print(data)
-else:
-    print("Script could not connect to dataverse!")
+        print("There is not API TOKEN! Please run setup.py script!")
+
+
+if __name__ == "__main__":
+    main()

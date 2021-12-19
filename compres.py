@@ -167,25 +167,3 @@ def zip_files(dirName, zipFileName, filter):
         prev += len(list_with_lst_to_zip[i])
 
     return lst
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-d",
-        "--dir",
-        type=str,
-        required=True,
-        help="Directory where script will look for data.",
-    )
-    parser.add_argument(
-        "-fp",
-        "--files_prefix",
-        type=str,
-        required=True,
-        help="Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt",
-    )
-
-    args = parser.parse_args()
-
-    zip_files(args.dir, args.files_prefix, args.files_prefix)

@@ -5,14 +5,11 @@ from pyDataverse.models import Datafile
 import json
 import requests
 import subprocess as sp
-from credentials import API
+
+with open("credentials.json", "r") as file:
+    API = json.load(file)
 
 API_TOKEN = API["API_TOKEN"]
-
-# MXRDR_PATH = 'https://{}:{}@mxrdr-test.icm.edu.pl'.format(
-#     API['LOGIN_DATA']['username'],
-#     API['LOGIN_DATA']['password'],
-# )
 
 MXRDR_PATH = "https://mxrdr.icm.edu.pl"
 
