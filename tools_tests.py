@@ -5,6 +5,10 @@ from tools import *
 
 # python -m unittest tools_tests.py
 
+API_TOKEN = ""
+USERNAME = ""
+PASSWORD = ""
+
 
 class TestTools(unittest.TestCase):
     api = None
@@ -14,7 +18,10 @@ class TestTools(unittest.TestCase):
 
     def setUp(self):
         os.chdir("files")
-        self.api = NativeApi(MXRDR_PATH, API_TOKEN)
+        self.api = NativeApi(
+            "https://{}:{}@mxrdr-test.icm.edu.pl".format(USERNAME, PASSWORD),
+            API_TOKEN,
+        )
         self.online_dataset = read_from_file("dataset.json")
         self.dataset_to_be_created = "test_dataset.json"
         self.dummy_dataset = "dummy_dataset.json"
@@ -43,8 +50,9 @@ class TestTools(unittest.TestCase):
 
     def test_create_dataset(self):
         data = ast.literal_eval(
-            create_dataset(self.dataset_to_be_created).stdout.decode("UTF-8")
+            create_dataset(API_TOKEN, self.dataset_to_be_created).stdout.decode("UTF-8")
         )
+        print(data)
         self.assertEqual("OK", data["status"])
         self.assertEqual(
             get_dataset_id(self.api, data["data"]["persistentId"]), data["data"]["id"]
@@ -57,14 +65,14 @@ class TestTools(unittest.TestCase):
                 "metadataBlocks"
             ],
         )
-        delete_draft_dataset(data["data"]["id"])
+        delete_draft_dataset(API_TOKEN, data["data"]["id"])
 
     def test_delete_draft_dataset(self):
         data = ast.literal_eval(
-            create_dataset(self.dummy_dataset).stdout.decode("UTF-8")
+            create_dataset(API_TOKEN, self.dummy_dataset).stdout.decode("UTF-8")
         )
         id = get_dataset_id(self.api, data["data"]["persistentId"])
-        self.assertEqual(200, delete_draft_dataset(id))
+        self.assertEqual(200, delete_draft_dataset(API_TOKEN, id))
         self.assertEqual(-1, get_dataset_id(self.api, data["data"]["persistentId"]))
 
     def tearDown(self):

@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 
-def send_files_main(api, dir, files_prefix, url):
+def send_files_main(api_token, api, dir, files_prefix, url):
     parsed_url = urlparse(url)
     DOI = parse_qs(parsed_url.query)["persistentId"][0]
 
@@ -20,7 +20,7 @@ def send_files_main(api, dir, files_prefix, url):
     print("Sending zips to dataset...")
     for it, file in enumerate(zip_files_list):
         print("Uploading file #" + str(it))
-        code = upload_file_to_dataset(DOI, file, "")
+        code = upload_file_to_dataset(api_token, DOI, file, "")
         print("Status: " + str(code))
     print("Done")
 

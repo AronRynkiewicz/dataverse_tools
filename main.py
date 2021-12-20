@@ -6,7 +6,17 @@ import send_files_main
 from tools import *
 from compres import *
 
+# pyinstaller main.py -F -n dataverse_tools
+
+
 parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-at",
+    "--api_token",
+    type=str,
+    required=True,
+    help="Your api token.",
+)
 parser.add_argument(
     "-f",
     "--json_file",
@@ -53,49 +63,44 @@ args = parser.parse_args()
 
 
 def main():
-    print("Checking API TOKEN...")
-    if API_TOKEN:
-        api = NativeApi(MXRDR_PATH, API_TOKEN)
+    api_token = str(args.api_token).strip()
 
-        print("Checking connection to dataverse...")
-        try:
-            connection_code = check_connection(api)
-        except pyDataverse.exceptions.ApiAuthorizationError:
-            connection_code = 403
-            print("Bad api key!")
-        print("Status: " + str(connection_code))
+    api = NativeApi(MXRDR_PATH, api_token)
 
-        if connection_code == 200:
-            if args.mode == "create":
-                try:
-                    args.json_file
-                except Exception:
-                    print("JSON file was not set! Please set JSON files using -f flag.")
-                    return
-                create_dataset_main.create_dataset_main(
-                    args.dir, args.files_prefix, args.json_file
-                )
+    print("Checking connection to dataverse...")
+    try:
+        connection_code = check_connection(api)
+    except pyDataverse.exceptions.ApiAuthorizationError:
+        connection_code = 403
+        print("Bad api token!")
+    print("Status: " + str(connection_code))
 
-            if args.mode == "zip":
-                compres_files_main.compres_files_main(args.dir, args.files_prefix)
+    if connection_code == 200:
+        if args.mode == "create":
+            try:
+                args.json_file
+            except Exception:
+                print("JSON file was not set! Please set JSON files using -f flag.")
+                return
+            create_dataset_main.create_dataset_main(
+                api_token, args.dir, args.files_prefix, args.json_file
+            )
 
-            if args.mode == "send":
-                try:
-                    args.url
-                except Exception:
-                    print(
-                        "Dataset URL was not set! Please set URL files using -u flag."
-                    )
-                    return
-                send_files_main.send_files_main(
-                    api, args.dir, args.files_prefix, args.url
-                )
+        if args.mode == "zip":
+            compres_files_main.compres_files_main(args.dir, args.files_prefix)
 
-        else:
-            print("Could not connect to dataverse!")
+        if args.mode == "send":
+            try:
+                args.url
+            except Exception:
+                print("Dataset URL was not set! Please set URL files using -u flag.")
+                return
+            send_files_main.send_files_main(
+                api_token, api, args.dir, args.files_prefix, args.url
+            )
 
     else:
-        print("There is not API TOKEN! Please run setup.py script!")
+        print("Could not connect to dataverse!")
 
 
 if __name__ == "__main__":

@@ -6,13 +6,6 @@ import json
 import requests
 import subprocess as sp
 
-try:
-    with open("credentials.json", "r") as file:
-        API = json.load(file)
-        API_TOKEN = API["API_TOKEN"]
-except FileNotFoundError:
-    print("There is not credentials.json file! Please run setup.py script!")
-
 
 MXRDR_PATH = "https://mxrdr.icm.edu.pl"
 
@@ -35,7 +28,7 @@ def check_connection(api):
     return resp.status_code
 
 
-def create_dataset(json_file, dataverse=":root"):
+def create_dataset(api_token, json_file, dataverse=":root"):
     """
     Creates datasets in given dataverse.
 
@@ -52,7 +45,7 @@ def create_dataset(json_file, dataverse=":root"):
         True if dataset has been created, otherwise - False.
     """
 
-    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
+    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(api_token)
     shell_command += "-X POST {0}/api/dataverses/{1}/datasets ".format(
         MXRDR_PATH, dataverse
     )
@@ -146,7 +139,7 @@ def get_datasets_metadata(api, DOI):
     return metadata
 
 
-def update_metadata(DOI, json_file):
+def update_metadata(api_token, DOI, json_file):
     """
     Updates metadata of given datasets.
 
@@ -164,7 +157,7 @@ def update_metadata(DOI, json_file):
     """
     file = read_from_file(json_file)
 
-    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(API_TOKEN)
+    shell_command = 'curl -H "X-Dataverse-key:{0}" '.format(api_token)
     shell_command += "-X PUT {0}/api/datasets/:persistentId/versions/:draft?persistentId={1} ".format(
         MXRDR_PATH, DOI
     )
@@ -177,7 +170,7 @@ def update_metadata(DOI, json_file):
     return True
 
 
-def upload_file_to_dataset(DOI, file_name, file_description):
+def upload_file_to_dataset(api_token, DOI, file_name, file_description):
     """
     Uploads single file to dataset.
 
@@ -209,7 +202,7 @@ def upload_file_to_dataset(DOI, file_name, file_description):
 
     url_dataset_id = (
         "{0}/api/datasets/:persistentId/add?persistentId={1}&key={2}".format(
-            MXRDR_PATH, DOI, API_TOKEN
+            MXRDR_PATH, DOI, api_token
         )
     )
 
@@ -254,7 +247,7 @@ def get_dataset_id(api, DOI):
     return id
 
 
-def delete_draft_dataset(id):
+def delete_draft_dataset(api_token, id):
     """
     Deletes draft of given dataset.
 
@@ -269,6 +262,6 @@ def delete_draft_dataset(id):
         When upload is succesful returns 200, otherwise 400ish code.
     """
     r = requests.delete(
-        MXRDR_PATH + "/api/datasets/{0}/versions/:draft?key={1}".format(id, API_TOKEN)
+        MXRDR_PATH + "/api/datasets/{0}/versions/:draft?key={1}".format(id, api_token)
     )
     return r.status_code

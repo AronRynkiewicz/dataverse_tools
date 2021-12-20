@@ -4,9 +4,9 @@ from tools import *
 from compres import *
 
 
-def create_dataset_main(dir, files_prefix, json_file):
+def create_dataset_main(api_token, dir, files_prefix, json_file):
     print("Creating new dataset...")
-    data = ast.literal_eval(create_dataset(json_file).stdout.decode("UTF-8"))
+    data = ast.literal_eval(create_dataset(api_token, json_file).stdout.decode("UTF-8"))
     print("Status: " + data["status"])
 
     if data["status"] == "OK":
@@ -19,7 +19,9 @@ def create_dataset_main(dir, files_prefix, json_file):
         print("Sending zips to dataset...")
         for it, file in enumerate(zip_files_list):
             print("Uploading file #" + str(it))
-            code = upload_file_to_dataset(data["data"]["persistentId"], file, "")
+            code = upload_file_to_dataset(
+                api_token, data["data"]["persistentId"], file, ""
+            )
             print("Status: " + str(code))
         print("Done")
 
