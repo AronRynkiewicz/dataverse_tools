@@ -29,21 +29,20 @@ pip install -r requirements.txt
 ```
 to install required python packages.
 
-Last step is pasting your API token to credentials.py file between '':
-```python
-API = {
-    'API_TOKEN': 'you api token goes here',
-}
-```
-
 # Usage
 To use script write:
 ```console
-python main.py -f dataset_metadata.json -d data_directory -fp common_file_prefix
+python main.py -at API_TOKEN -f dataset_metadata.json -d data_directory -fp common_file_prefix -u URL -m mode
 ```
 while being in dataverse_tools directory.
 
 Flags meaning:
-* f - metadata for new dataset in form of json file.
-* d - directory where script will look for data.
-* fp - Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt.
+* at - your api token form [MX-RDR](https://mxrdr.icm.edu.pl/) (obligatory).
+* f - metadata for new dataset in form of json file (optional).
+* d - directory where script will look for data (obligatory).
+* fp - Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt (obligatory).
+* u - URL for given dataset, to which files will be send.
+* m - mode, you can use this script in three diffrent ways:
+    * send - zipps and sends files to given dataset (requires -u flag),
+    * only zips files in given directory,
+    * creates new dataset, zips files and sends them (requires -f flag).
