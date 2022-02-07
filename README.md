@@ -41,8 +41,8 @@ Flags meaning:
 * f - metadata for new dataset in form of json file (optional).
 * d - directory where script will look for data (obligatory).
 * fp - Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt (obligatory).
-* u - URL for given dataset, to which files will be send.
+* u - URL for given dataset, to which files will be send (optional).
 * m - mode, you can use this script in three diffrent ways:
     * send - zipps and sends files to given dataset (requires -u flag),
-    * only zips files in given directory,
-    * creates new dataset, zips files and sends them (requires -f flag).
+    * zip - only zips files in given directory,
+    * create - creates new dataset, zips files and sends them (requires -f flag).
