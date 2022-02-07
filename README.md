@@ -46,3 +46,19 @@ Flags meaning:
     * send - zipps and sends files to given dataset (requires -u flag),
     * zip - only zips files in given directory,
     * create - creates new dataset, zips files and sends them (requires -f flag).
+
+# Examples
+Send mode example:
+```console
+python main.py -at abcdefqwe-adrf-axdrrg-dwqzd-11qwe -d images -fp img -u https://mxrdr.icm.edu.pl/dataset.xhtml?persistentId=doi:10.11111/AAAAA -m send
+```
+
+Zip mode example:
+```console
+python main.py -at abcdefqwe-adrf-axdrrg-dwqzd-11qwe -d images -fp img -m zip
+```
+
+Create mode example:
+```console
+python main.py -at abcdefqwe-adrf-axdrrg-dwqzd-11qwe -d images -fp img -m create -f my_images_metadata.json
+```
