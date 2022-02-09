@@ -41,7 +41,7 @@ Flags meaning:
 * d - directory where script will look for data (obligatory).
 * fp - Common prefix for all files to be uploaded. Notice that script expects that file id will be separated by _ from common prefix, eg.: file_0001.txt file_0002.txt (obligatory).
 * f - metadata for new dataset in form of json file (optional).
-* u - DOI for given dataset, to which files will be send (optional) Important note: all our DOIs begin with doi:10.18150 so You need to pass just part after "/" sign, e.g.: doi:10.18150/ABCDEF just write ABCDEF.
+* u - DOI for given dataset, to which files will be send (optional) Important note: all our DOIs begin with doi:10.18150 so You need to pass just part after "/" sign, e.g.: for doi:10.18150/ABCDEF just write ABCDEF.
 * m - mode, you can use this script in three diffrent ways (optional, script by default zips files and asks user for next steps):
     * send - zipps and sends files to given dataset (requires -u flag),
     * zip - only zips files in given directory (default behaviour),
@@ -58,7 +58,7 @@ Send mode example:
 python main.py -at abcdefqwe-adrf-axdrrg-dwqzd-11qwe -d images -fp img -u AAAAA -m send
 ```
 
-Zip mode example:
+Zip mode example (basically same as short command):
 ```console
 python main.py -at abcdefqwe-adrf-axdrrg-dwqzd-11qwe -d images -fp img -m zip
 ```
