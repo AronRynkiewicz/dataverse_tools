@@ -24,10 +24,11 @@ def create_dict(dirName):
         if os.path.isdir(path):
             continue
 
-        if "data" in filename:
-            file_type = "_".join(filename.split("_")[:-2])
-        else:
-            file_type = "_".join(filename.split("_")[:-1])
+        # if "data" in filename:
+        #     file_type = "_".join(filename.split("_")[:-2])
+        # else:
+
+        file_type = "_".join(filename.split("_")[:-1])
         try:
             d[file_type].append(filename)
         except Exception:
@@ -106,6 +107,8 @@ def zip_files(dirName, zipFileName, filter):
     try:
         d[dataset]
     except KeyError:
+        print(filter)
+        print(d.keys())
         return []
 
     current_path = os.getcwd()
@@ -117,30 +120,36 @@ def zip_files(dirName, zipFileName, filter):
     os.chdir(current_path)
 
     lst_mb = list(map(convert_to_MBs, lst_size_file))
-    d[dataset].sort()
+    d[dataset].sort(key=lambda f: int(f.split("_")[-1].split(".")[0]))
+
     for i in range(0, len(d[dataset])):
         lst_to_zip.append(d[dataset][i])
         remembered_size += lst_mb[i]
 
         if remembered_size >= 1900:
             lst_to_zip.pop()
-            lst_to_zip.sort()
+            lst_to_zip.sort(key=lambda f: int(f.split("_")[-1].split(".")[0]))
+
             list_with_lst_to_zip.append(lst_to_zip[:])
             lst_to_zip.clear()
             remembered_size = 0
             lst_to_zip.append(d[dataset][i])
             remembered_size += lst_mb[i]
-    lst_to_zip.sort()
+
+    lst_to_zip.sort(key=lambda f: int(f.split("_")[-1].split(".")[0]))
     list_with_lst_to_zip.append(lst_to_zip[:])
 
     prev = 0
+
     print(
-        "Creating: "
-        + str(len(list_with_lst_to_zip))
-        + " zip files from "
-        + str(len(d[dataset]))
-        + " files"
+        str(len(d[dataset]))
+        + " files selected: "
+        + list_with_lst_to_zip[0][0]
+        + " to "
+        + list_with_lst_to_zip[-1][-1]
     )
+
+    print(str(len(list_with_lst_to_zip)) + " zip files will be created")
 
     for i in range(0, len(list_with_lst_to_zip)):
         print("Creating zip: " + str(i + 1) + " of " + str(len(list_with_lst_to_zip)))

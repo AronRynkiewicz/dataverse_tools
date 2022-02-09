@@ -8,6 +8,12 @@ from compres import *
 
 # pyinstaller main.py -F -n dataverse_tools
 
+CONNECTION_CODES = {
+    200: "OK",
+    403: "Bad api token",
+}
+
+DOI_URL = "https://mxrdr.icm.edu.pl/dataset.xhtml?persistentId=doi:10.18150/"
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -43,13 +49,13 @@ parser.add_argument(
     "--url",
     type=str,
     required=False,
-    help="Url of a dataset where zipped files will be send.",
+    help="DOI of a dataset where zipped files will be send.",
 )
 parser.add_argument(
     "-m",
     "--mode",
     type=str,
-    required=True,
+    required=False,
     choices={"send", "zip", "create"},
     help="""
     Mode in which script will work:
@@ -72,10 +78,50 @@ def main():
         connection_code = check_connection(api)
     except pyDataverse.exceptions.ApiAuthorizationError:
         connection_code = 403
-        print("Bad api token!")
-    print("Status: " + str(connection_code))
+    print("Status: " + CONNECTION_CODES[connection_code])
 
-    if connection_code == 200:
+    if not connection_code == 200:
+        print("Could not connect to dataverse!")
+        return
+
+    if not args.mode:
+        zip_files_list = compres_files_main.compres_files_main(
+            args.dir, args.files_prefix
+        )
+
+        user_answer = None
+        while not user_answer:
+            user_answer = input(
+                "Do you want to \n 1) Create new dataset \n 2) Upload files to existing dataset \n 3) Exit \n (Type 1 or 2 or 3) \n"
+            )
+
+        try:
+            user_answer = int(user_answer.strip())
+        except Exception:
+            return
+
+        if user_answer == 1:
+            json_file = None
+
+            while not json_file:
+                json_file = input("Please provide valid json file: ")
+
+            create_dataset_main.create_dataset_main(
+                api_token, args.dir, args.files_prefix, json_file, zip_files_list
+            )
+        elif user_answer == 2:
+            url = None
+
+            while not url:
+                url = input("Please provide dataset url: ")
+
+            dataset_url = DOI_URL + url.strip()
+            send_files_main.send_files_main(
+                api_token, api, args.dir, args.files_prefix, dataset_url, zip_files_list
+            )
+        else:
+            return
+    else:
         if args.mode == "create":
             try:
                 args.json_file
@@ -93,14 +139,12 @@ def main():
             try:
                 args.url
             except Exception:
-                print("Dataset URL was not set! Please set URL files using -u flag.")
+                print("Dataset URL was not set! Please set DOI using -u flag.")
                 return
+            dataset_url = DOI_URL + args.url.strip()
             send_files_main.send_files_main(
-                api_token, api, args.dir, args.files_prefix, args.url
+                api_token, api, args.dir, args.files_prefix, dataset_url
             )
-
-    else:
-        print("Could not connect to dataverse!")
 
 
 if __name__ == "__main__":
