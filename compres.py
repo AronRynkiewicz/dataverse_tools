@@ -75,6 +75,30 @@ def convert_to_MBs(bytes_value):
     return math.ceil(bytes_value / (1024 ** 2))
 
 
+def check_if_files_already_exists(list_with_lst_to_zip, zipFileName):
+    prev = 0
+
+    files_lst = []
+    for i in range(0, len(list_with_lst_to_zip)):
+        tmp_zipFileName = (
+            zipFileName
+            + "_"
+            + "img"
+            + "_"
+            + str(prev + 1)
+            + "_"
+            + str(prev + len(list_with_lst_to_zip[i]))
+            + ".zip"
+        )
+        files_lst.append(tmp_zipFileName)
+        prev += len(list_with_lst_to_zip[i])
+
+    if all([True if i in os.listdir() else False for i in files_lst]):
+        return True, files_lst
+    else:
+        return False, []
+
+
 def zip_files(dirName, zipFileName, filter):
     """
     Check the number of files.
@@ -138,6 +162,12 @@ def zip_files(dirName, zipFileName, filter):
 
     lst_to_zip.sort(key=lambda f: int(f.split("_")[-1].split(".")[0]))
     list_with_lst_to_zip.append(lst_to_zip[:])
+
+    already_created, files = check_if_files_already_exists(list_with_lst_to_zip, zipFileName)
+
+    if already_created:
+        print("Similar zip files found, omitting new ones creation")
+        return files
 
     prev = 0
 

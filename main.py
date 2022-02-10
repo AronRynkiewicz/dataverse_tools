@@ -103,22 +103,30 @@ def main():
         if user_answer == 1:
             json_file = None
 
-            while not json_file:
+            while True:
                 json_file = input("Please provide valid json file: ")
 
-            create_dataset_main.create_dataset_main(
-                api_token, args.dir, args.files_prefix, json_file, zip_files_list
-            )
+                status = create_dataset_main.create_dataset_main(
+                    api_token, args.dir, args.files_prefix, json_file, zip_files_list
+                )
+
+                if status:
+                    break
+
         elif user_answer == 2:
             url = None
 
-            while not url:
-                url = input("Please provide dataset url: ")
+            while True:
+                url = input("Please provide dataset ID (last part of DOI): ")
 
-            dataset_url = DOI_URL + url.strip()
-            send_files_main.send_files_main(
-                api_token, api, args.dir, args.files_prefix, dataset_url, zip_files_list
-            )
+                dataset_url = DOI_URL + url.strip()
+                status = send_files_main.send_files_main(
+                    api_token, api, args.dir, args.files_prefix, dataset_url, zip_files_list
+                )
+
+                if status:
+                    break
+
         else:
             return
     else:
@@ -139,7 +147,7 @@ def main():
             try:
                 args.url
             except Exception:
-                print("Dataset URL was not set! Please set DOI using -u flag.")
+                print("Dataset DOI was not set! Please set DOI using -u flag.")
                 return
             dataset_url = DOI_URL + args.url.strip()
             send_files_main.send_files_main(

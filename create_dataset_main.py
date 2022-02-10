@@ -19,7 +19,7 @@ def create_dataset_main(api_token, dir, files_prefix, json_file, zip_files_list=
 
         print("Sending zips to dataset...")
         for it, file in enumerate(zip_files_list):
-            print("Uploading file #" + str(it) + ": " + file)
+            print("Uploading file #" + str(it + 1) + ": " + file)
             code = upload_file_to_dataset(
                 api_token, data["data"]["persistentId"], file, ""
             )
@@ -30,6 +30,8 @@ def create_dataset_main(api_token, dir, files_prefix, json_file, zip_files_list=
         for file in zip_files_list:
             os.remove(file)
         print("Done")
+        return True
     else:
-        print("There was a problem with dataset creation:")
+        print("There was a problem with dataset creation (probably file with metadata is now valid):")
         print(data)
+        return False
