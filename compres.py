@@ -2,7 +2,9 @@ import math
 from zipfile import ZipFile
 import os
 from os.path import basename
+from halo import Halo
 
+ALLOWED_ZIP_SIZE = 1900
 
 def create_dict(dirName):
     """
@@ -150,7 +152,7 @@ def zip_files(dirName, zipFileName, filter):
         lst_to_zip.append(d[dataset][i])
         remembered_size += lst_mb[i]
 
-        if remembered_size >= 1900:
+        if remembered_size >= ALLOWED_ZIP_SIZE:
             lst_to_zip.pop()
             lst_to_zip.sort(key=lambda f: int(f.split("_")[-1].split(".")[0]))
 
@@ -182,7 +184,11 @@ def zip_files(dirName, zipFileName, filter):
     print(str(len(list_with_lst_to_zip)) + " zip files will be created")
 
     for i in range(0, len(list_with_lst_to_zip)):
-        print("Creating zip: " + str(i + 1) + " of " + str(len(list_with_lst_to_zip)))
+
+        file_pos = str(i + 1) + " of " + str(len(list_with_lst_to_zip))
+        spinner = Halo(text="Creating zip: " + file_pos, spinner='dots')
+        spinner.start()
+
         tmp_zipFileName = (
             zipFileName
             + "_"
@@ -203,5 +209,6 @@ def zip_files(dirName, zipFileName, filter):
         )
         lst.append(tmp_zipFileName)
         prev += len(list_with_lst_to_zip[i])
+        spinner.succeed("Created zip: " + file_pos)
 
     return lst

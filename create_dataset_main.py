@@ -2,6 +2,7 @@ import ast
 import os
 from tools import *
 from compres import *
+from halo import Halo
 
 
 def create_dataset_main(api_token, dir, files_prefix, json_file, zip_files_list=None):
@@ -19,11 +20,19 @@ def create_dataset_main(api_token, dir, files_prefix, json_file, zip_files_list=
 
         print("Sending zips to dataset...")
         for it, file in enumerate(zip_files_list):
-            print("Uploading file #" + str(it + 1) + ": " + file)
+
+            file_pos = str(it + 1) + ": " + file
+            spinner = Halo(text="Uploading file #" + file_pos, spinner='dots')
+            spinner.start()
+
             code = upload_file_to_dataset(
                 api_token, data["data"]["persistentId"], file, ""
             )
-            print("Status: " + ("OK" if code == 200 else str(code)))
+
+            if code == 200:
+                spinner.succeed("Successful upload for file #" + file_pos)
+            else:
+                spinner.fail("Status: " + str(code))
         print("Done")
 
         print("Cleaning...")
