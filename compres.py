@@ -1,4 +1,5 @@
 import math
+import zipfile
 from zipfile import ZipFile
 import os
 from os.path import basename
@@ -60,6 +61,7 @@ def zipFilesInDir2(dirName, zipFileName, filter, d, lst):
         List of files to be compressed.
 
     """
+    compression =zipfile.ZIP_DEFLATED
     dataset = filter
     with ZipFile(zipFileName, "w") as zipObj:
         try:
@@ -69,7 +71,7 @@ def zipFilesInDir2(dirName, zipFileName, filter, d, lst):
 
         for i in range(0, len(lst)):
             filePath = os.path.join(dirName, lst[i])
-            zipObj.write(filePath, basename(filePath))
+            zipObj.write(filePath, basename(filePath), compress_type=compression)
     zipObj.close()
 
 

@@ -35,7 +35,7 @@ def create_dummy_files(number_files):
     os.chdir(DUMMY_DIR_NAME)
     lst = []
     for i in range(0, number_files):
-        file_name = DATASET_NAME + "_data_" + str(i) + ".h5"
+        file_name = DATASET_NAME  + str(i) + ".h5"
         with open(file_name, "w") as file:
             lines = ["pierwsza\n", "druga\n", "trzecia\n"]
             file.writelines(lines)
